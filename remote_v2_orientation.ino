@@ -14,7 +14,6 @@ int old_button_1_state = 0;
 int old_button_2_state = 0;
 int button_1_2_hold_counter = 0;
 
-
 IPAddress server(192,168,1,52);
 WiFiUDP conn;
 uint8_t id;
@@ -59,9 +58,6 @@ void loop(void)
 
   int button_1_state = digitalRead(button_1_pin);
   int button_2_state = digitalRead(button_2_pin);
-  Serial.print(button_1_state);
-  Serial.print("  ");
-  Serial.println(button_2_state);
   // Actions:
   // 1: Button 1 clicked down (i.e. hold and release is disregarded)
   // 2: Button 2 clicked down
