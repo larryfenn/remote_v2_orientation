@@ -40,6 +40,7 @@ void setup(void)
   Serial.print("Connected to wifi");
   conn.begin(5004);
   Serial.print("UDP client created");
+  id = WiFi.localIP()[3];
   pinMode(button_1_pin, INPUT_PULLUP);
   pinMode(button_2_pin, INPUT_PULLUP);
   Serial.print("Setup completed");
@@ -75,17 +76,16 @@ void loop(void)
     if (button_2_state != old_button_2_state && button_2_state == LOW) {
       action_flag = 2;
     }
-    // if in fact button 1 and 3 are being held then we override the action flag
+    // if in fact button 1 and 2 are being held then we override the action flag
     if (button_1_state == old_button_1_state && button_2_state == old_button_2_state && button_1_state == LOW && button_2_state == LOW) {
       button_1_2_hold_counter++;
     }
     if (button_1_2_hold_counter > 500) {
-      action_flag = 4; // put this back to 4 later
+      action_flag = 4;
       button_1_2_hold_counter = 0;
     }
   }
 
-  id = WiFi.localIP()[3];
   int16_t w = static_cast<int16_t>(sensorValue.un.arvrStabilizedRV.real * (1 << 14));
   int16_t x = static_cast<int16_t>(sensorValue.un.arvrStabilizedRV.i * (1 << 14));
   int16_t y = static_cast<int16_t>(sensorValue.un.arvrStabilizedRV.j * (1 << 14));
@@ -101,16 +101,6 @@ void loop(void)
     conn.write(reinterpret_cast<uint8_t*>(&z), sizeof(z));
     conn.write(reinterpret_cast<uint8_t*>(&action_flag), sizeof(action_flag));
     conn.endPacket();
-/**
-    Serial.print(" Rotation Vector - r: ");
-    Serial.print(static_cast<int16_t>(sensorValue.un.arvrStabilizedRV.real * (1 << 14)));
-    Serial.print(" i: ");
-    Serial.print(static_cast<int16_t>(sensorValue.un.arvrStabilizedRV.i * (1 << 14)));
-    Serial.print(" j: ");
-    Serial.print(static_cast<int16_t>(sensorValue.un.arvrStabilizedRV.j * (1 << 14)));
-    Serial.print(" k: ");
-    Serial.println(static_cast<int16_t>(sensorValue.un.arvrStabilizedRV.k * (1 << 14)));
-    **/
     if (action_flag != 0 && action_flag_repeats > DATAGRAM_REPEATS) {
       action_flag = 0;
       action_flag_repeats = 0;
